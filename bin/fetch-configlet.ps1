@@ -11,6 +11,10 @@ Function RedirectLocationHeader([string]$url) {
     $response.GetResponseHeader("Location")
 }
 
+Function Headers {
+    If ($GITHUB_TOKEN) { $headers = @{ Authorization = "Bearer ${GITHUB_TOKEN}" } } Else { $headers = @{ } }
+}
+
 Function LatestVersion {
     $location = RedirectLocationHeader("https://github.com/exercism/configlet/releases/latest")
     $location.Substring($location.LastIndexOf("/") + 1)
@@ -21,12 +25,13 @@ Function Arch {
 }
 
 $arch = Arch
+$headers = Headers
 $version = LatestVersion
 $fileName = "configlet-windows-$arch.zip"
 $url = "https://github.com/exercism/configlet/releases/download/$version/$filename"
 $outputDirectory = "bin"
 $outputFile = Join-Path -Path $outputDirectory -ChildPath $fileName
 
-Invoke-WebRequest -Uri $url -OutFile $outputFile
+Invoke-WebRequest -Headers $headers -Uri $url -OutFile $outputFile
 Expand-Archive $outputFile -DestinationPath $outputDirectory -Force
 Remove-Item -Path $outputFile

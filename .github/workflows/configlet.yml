@@ -9,9 +9,11 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-    - uses: actions/checkout@v1
+    - uses: actions/checkout@722adc63f1aa60a57ec37892e133b1d319cae598 # 2.0.0
 
     - name: Fetch configlet
+      env:
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
       run: ./bin/fetch-configlet
 
     - name: Lint
